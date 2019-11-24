@@ -1,0 +1,57 @@
+create or replace PROCEDURE DELETE_PK_FKS(PKtableName in varchar2,pkColName in varchar2,pkID in varchar2)
+AS
+CURSOR pk IS 
+(select distinct a.table_name,a.CONSTRAINT_NAME
+  from all_cons_columns a
+  JOIN all_constraints c ON a.owner = c.owner AND a.constraint_name = c.constraint_name
+  where column_name=pkColName);
+
+n_found         varchar2(4000);
+l_status        integer;
+l_theCursor     integer default dbms_sql.open_cursor;
+l_descTbl       dbms_sql.desc_tab;
+l_colCnt        number;
+
+begin
+n_found:=0;
+        DBMS_OUTPUT.put_line ('begin');
+
+  FOR parentk_tables 
+   IN pk
+   LOOP
+        -- search for fks for this pk.
+        DBMS_OUTPUT.put_line (parentk_tables.table_name||' '||parentk_tables.CONSTRAINT_NAME);
+      
+        dbms_sql.parse(l_theCursor, 'select count(*) from '||parentk_tables.table_name||' where ' || pkColName||' = '||pkID, dbms_sql.NATIVE);
+        dbms_sql.describe_columns( l_theCursor, l_colCnt, l_descTbl);
+        dbms_sql.define_column(l_theCursor,l_colCnt, n_found, 4000);
+        l_status := dbms_sql.execute(l_theCursor);
+        while ( dbms_sql.fetch_rows(l_theCursor) > 0 ) 
+        loop
+        dbms_sql.column_value( l_theCursor, l_colCnt, n_found );
+        end loop;
+
+        DBMS_OUTPUT.put_line ('step 2 ');
+
+        if(n_found<>'0' AND parentk_tables.table_name<>PKtableName)then 
+      
+        dbms_sql.parse(l_theCursor,'ALTER TABLE '||parentk_tables.table_name||' disable CONSTRAINT '||parentk_tables.CONSTRAINT_NAME||' CASCADE', dbms_sql.NATIVE);
+        l_status := dbms_sql.execute(l_theCursor);
+      
+        DBMS_OUTPUT.PUT_LINE('update '||parentk_tables.table_name||' set '||pkColName||' = NULL where '||pkColName||' = '||pkID);
+        dbms_sql.parse(l_theCursor,'update '||parentk_tables.table_name||' set '||pkColName||' = NULL where '||pkColName||' = '||pkID, dbms_sql.NATIVE);
+        l_status := dbms_sql.execute(l_theCursor);
+        
+        dbms_sql.parse(l_theCursor,'ALTER TABLE '||parentk_tables.table_name||' enable CONSTRAINT '||parentk_tables.CONSTRAINT_NAME, dbms_sql.NATIVE);
+        l_status := dbms_sql.execute(l_theCursor);
+     
+        end if;
+        
+      DBMS_OUTPUT.put_line (n_found);
+     
+   END LOOP;
+   
+   dbms_sql.close_cursor(l_theCursor);
+  
+      
+end DELETE_PK_FKS;
