@@ -1,9 +1,6 @@
 # DB Management System (Oracle DB using PL/SQL)
 
 <div>
-  <br>
-  <img src="resources\kalonline_db\appicon.png" width="80" height="80"><h1 style="display:inline"> DB Management System (Oracle DB using PL/SQL)</h1>
-  <br><br>
   This project was implemented during Oracle DB course at <a href="https://english.afeka.ac.il/">Afeka Academic College of Engineering.</a>
   <br><br>
   The main idea of the project was to create a DB management system where the user can run different queries edit,create and manage DB tables.
