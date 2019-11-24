@@ -28,5 +28,7 @@
   3. MVC (Model View Control) Architecture.
   <h5>Hosted by <a href="https://yedionpub.afeka.ac.il/yedion/fireflyweb.aspx?prgname=Show_Teacher_Card&arguments=-N81,-AE,-N9998">Mr. Libis Alex</a></h5>
   <br>
-  Source code : <a href="#"> ............................. </a>
+ Please enter to my blog for more information and details :
+<br>
+<a href="#">Soon...</a>
 </div>
